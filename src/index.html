@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>CrowdFunding DApp</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; border: 1px solid #ccc; padding: 20px; border-radius: 10px; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        input { padding: 8px; }
+        #status { color: green; font-weight: bold; margin-top: 10px; }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Sutelktinis Finansavimas</h1>
+        <p>Prisijungta su: <span id="account">Neprisijungta</span></p>
+        <hr>
+        
+        <h3>Projekto statistika:</h3>
+        <p>Tikslas: <span id="target">0</span> ETH</p>
+        <p>Surinkta: <span id="raised">0</span> ETH</p>
+        <p>Liko laiko: <span id="timeLeft">0</span> sek.</p>
+
+        <hr>
+        <h3>Paremkite projektą</h3>
+        <input type="number" id="amount" placeholder="Kiekis ETH (pvz. 1)">
+        <button onclick="App.contribute()">Pervesti</button>
+
+        <hr>
+        <h3>Valdymas</h3>
+        <button onclick="App.withdraw()">Išimti lėšas (Kūrėjui)</button>
+        <button onclick="App.refund()">Susigrąžinti (Rėmėjui)</button>
+        
+        <div id="status"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@truffle/contract@4.3.5/dist/truffle-contract.min.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>
