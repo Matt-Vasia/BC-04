@@ -6098,12 +6098,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x7A3033903Cb00AA6e1ddaaE7dc20905289aE782b",
-      "transactionHash": "0x98fc8b0371fbff5f6ff316290694b6abbe77694d73e5b75b9a9f97c114e882d9"
+      "address": "0xb510feF2024A2F1D69b2CCA2ed4Ee7B9d3B1d2c2",
+      "transactionHash": "0x939f129aafbe0b0f48d45d26e73fbd36e276f907afa57aedd8aa62da39d8b268"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-12-01T09:36:08.533Z",
+  "updatedAt": "2025-12-01T17:10:38.595Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
