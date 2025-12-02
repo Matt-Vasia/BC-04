@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract CrowdFunding {
     
-    // Kintamieji (State Variables)
+    // 1. Kintamieji (State Variables)
     address public manager;          // Projekto kūrėjo adresas
     uint public targetAmount;        // Finansinis tikslas (Wei formatu)
     uint public deadline;            // Laiko pabaigos žyma (timestamp)
@@ -12,12 +12,53 @@ contract CrowdFunding {
     // Mapping saugo informaciją, kiek kiekvienas rėmėjas pervedė
     mapping(address => uint) public contributors;
 
-    // Konstruktorius - pasileidžia tik vieną kartą, kuriant sutartį
+    // 2. Konstruktorius - pasileidžia tik vieną kartą, kuriant sutartį
     // _targetETH: kiek ETH norime surinkti
-    // _durationInMinutes: kiek minučių galios kampanija
+    // _durationInMinutes: kiek minučių galioja
     constructor(uint _targetETH, uint _durationInMinutes) {
         manager = msg.sender; // Tas, kas "deploja" kontraktą, tampa valdytoju
         targetAmount = _targetETH * 1 ether; // Konvertuojame ETH į Wei (mažiausią vienetą)
         deadline = block.timestamp + (_durationInMinutes * 1 minutes);
+    }
+
+    // 3. Funkcija: Rėmimas (Investavimas)
+    function contribute() public payable {
+        // Tikrinimai (Validation)
+        require(block.timestamp < deadline, "Laikas baigesi, remti nebegalima.");
+        require(msg.value > 0, "Pervedama suma turi buti didesne nei 0.");
+        
+        contributors[msg.sender] += msg.value; // Pridedame prie rėmėjo balanso
+        raisedAmount += msg.value;             // Atnaujiname bendrą sumą
+    }
+
+    // 4. Funkcija: Pinigų išmokėjimas kūrėjui (Sėkmės atveju)
+    function withdraw() public {
+        require(msg.sender == manager, "Tik projekto kurejas gali inicijuoti ismokejima.");
+        require(raisedAmount >= targetAmount, "Finansinis tikslas nepasiektas.");
+        
+        uint balance = address(this).balance;
+        payable(manager).transfer(balance); // Pervedame visus kontrakte esančius pinigus kūrėjui
+    }
+
+    // 5. Funkcija: Pinigų susigrąžinimas (Nesėkmės atveju)
+    function getRefund() public {
+        // Leidžiame grąžinti tik jei laikas baigėsi IR tikslas nebuvo pasiektas
+        require(block.timestamp >= deadline, "Kampanija dar vyksta.");
+        require(raisedAmount < targetAmount, "Tikslas pasiektas, grazinimas negalimas.");
+        require(contributors[msg.sender] > 0, "Jus nesate paremes sio projekto.");
+
+        uint amountToRefund = contributors[msg.sender];
+        
+        contributors[msg.sender] = 0; 
+        
+        payable(msg.sender).transfer(amountToRefund);
+    }
+
+    function timeLeft() public view returns (uint) {
+        if (block.timestamp >= deadline) {
+            return 0;
+        } else {
+            return deadline - block.timestamp;
+        }
     }
 }
