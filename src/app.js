@@ -105,8 +105,96 @@ App = {
             $("#timeLeft").css("color", "black");
         }
         }, 1000);
+    },
+  
+    // 5. Funkcija: Pervesti pinigus (Contribute)
+    contribute: async function() {
+      const amountEth = $("#amount").val();
+      const amountWei = web3.utils.toWei(amountEth, 'ether');
+      
+      $("#status").html("Vykdoma transakcija...");
+  
+      try {
+        const instance = await App.contracts.CrowdFunding.deployed();
+        await instance.contribute({ from: App.account, value: amountWei });
+        $("#status").html("Sėkmingai paremta!");
+        App.render(); // Atnaujiname informaciją
+      } catch (err) {
+        console.error(err);
+        $("#status").html("Klaida vykdant transakciją.");
+      }
+    },
+  
+    // 6. Funkcija: Išimti pinigus (Withdraw - tik kūrėjui)
+    withdraw: async function() {
+        $("#status").html("Bandoma išimti lėšas...");
+        try {
+          const instance = await App.contracts.CrowdFunding.deployed();
+          await instance.withdraw({ from: App.account });
+          
+          $("#status").html("Lėšos sėkmingai pervestos kūrėjui!");
+          $("#status").css("color", "green");
+          App.render();
+        } catch (err) {
+          // Čia naudojame naują funkciją
+          const reason = App.handleError(err);
+          $("#status").html(reason);
+          $("#status").css("color", "red");
+        }
+      },
+  
+    // 7. Funkcija: Grąžinti pinigus (Refund - rėmėjams)
+    refund: async function() {
+        $("#status").html("Bandoma susigrąžinti lėšas...");
+        try {
+          const instance = await App.contracts.CrowdFunding.deployed();
+          await instance.getRefund({ from: App.account });
+          
+          $("#status").html("Lėšos grąžintos į jūsų sąskaitą!");
+          $("#status").css("color", "green");
+          App.render();
+        } catch (err) {
+          // Čia naudojame naują funkciją
+          const reason = App.handleError(err);
+          $("#status").html(reason);
+          $("#status").css("color", "red");
+        }
+    },
+    // Pagalbinė funkcija klaidų apdorojimui
+    handleError: function(err) {
+        console.error("Pilna klaida (debug):", err);
+        
+        // Konvertuojame klaidą į tekstą
+        const message = err.message || err.toString();
+        
+        // 1. Ieškome žodžio "revert" (nes Solidity klaidos prasideda "VM Exception... revert ...")
+        // Regex paaiškinimas: ieškome "revert " ir paimame viską kas seka po jo
+        const match = message.match(/revert (.*)/);
+        
+        if (match && match[1]) {
+        // Išvalome, jei netyčia paėmėme per daug (pvz., uždarančias kabutes ar kitus techninius simbolius)
+        // Dažniausiai tekstas būna švarus, bet kartais reikia apkarpyti
+        let cleanReason = match[1].trim();
+        
+        // Jei gale yra nereikalingų simbolių, galime juos apvalyti (priklauso nuo naršyklės)
+        if (cleanReason.endsWith("'") || cleanReason.endsWith('"')) {
+            cleanReason = cleanReason.slice(0, -1);
+        }
+        
+        return "Klaida: " + cleanReason;
+        }
+        
+        // 2. Jei neradome "revert", galbūt vartotojas tiesiog atmetė transakciją MetaMask lange
+        if (message.includes("User denied") || message.includes("User rejected")) {
+        return "Jūs atšaukėte transakciją.";
+        }
+
+        // 3. Jei nepavyko atpažinti
+        return "Įvyko techninė klaida (žr. konsolę).";
     }
 };
+  
+  // Startuojame aplikaciją
 
 $(document).ready(function() {
     App.init();
