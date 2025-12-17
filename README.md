@@ -17,6 +17,7 @@ A decentralized crowdfunding platform built on the Ethereum blockchain. This DAp
 - **Blockchain Framework:** Truffle
 - **Frontend:** HTML, CSS, JavaScript, jQuery, Web3.js
 - **Local Development:** Ganache
+- **Public Development:** Sepolia
 - **Wallet:** MetaMask
 
 ## 📋 Prerequisites
@@ -93,9 +94,4 @@ Ensure you have the following installed:
 - `src/`: Frontend source code (`index.html`, `app.js`).
 - `test/`: Smart contract tests.
 - `truffle-config.js`: Truffle network and compiler configuration.
-
-## 📜 License
-
-ISC
-
 
