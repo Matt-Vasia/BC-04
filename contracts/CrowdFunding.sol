@@ -13,11 +13,11 @@ contract CrowdFunding {
     mapping(address => uint) public contributors;
 
     // 2. Konstruktorius - pasileidžia tik vieną kartą, kuriant sutartį
-    // _targetETH: kiek ETH norime surinkti
+    // _targetWei: kiek ETH norime surinkti (Wei formatu)
     // _durationInMinutes: kiek minučių galioja
-    constructor(uint _targetETH, uint _durationInMinutes) {
+    constructor(uint _targetWei, uint _durationInMinutes) {
         manager = msg.sender; // Tas, kas "deploja" kontraktą, tampa valdytoju
-        targetAmount = _targetETH * 1 ether; // Konvertuojame ETH į Wei (mažiausią vienetą)
+        targetAmount = _targetWei; // Tikimės gauti sumą Wei formatu
         deadline = block.timestamp + (_durationInMinutes * 1 minutes);
     }
 
