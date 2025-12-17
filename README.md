@@ -5,11 +5,10 @@ A decentralized crowdfunding platform built on the Ethereum blockchain. This DAp
 ## 🌟 Features
 
 - **Contribute:** Users can send ETH to support the project.
-- **Goal Tracking:** Real-time updates on raised amounts versus the target.
-- **Time Management:** Automatic deadline enforcement with a countdown timer.
-- **Manager Withdrawal:** The project creator can withdraw funds if the target is met.
+- **Updates:** Real-time updates on raised amounts versus the target.
+- **Time:** Automatic deadline enforcement with a countdown timer.
+- **Money Withdrawal:** The project creator can withdraw funds if the target is met.
 - **Refund System:** Contributors can claim refunds if the target is not met by the deadline.
-- **Live UI:** Interactive frontend using Web3.js and jQuery.
 
 ## 🛠 Technology Stack
 
@@ -17,6 +16,7 @@ A decentralized crowdfunding platform built on the Ethereum blockchain. This DAp
 - **Blockchain Framework:** Truffle
 - **Frontend:** HTML, CSS, JavaScript, jQuery, Web3.js
 - **Local Development:** Ganache
+- **Public Development:** Sepolia
 - **Wallet:** MetaMask
 
 ## 📋 Prerequisites
@@ -93,9 +93,4 @@ Ensure you have the following installed:
 - `src/`: Frontend source code (`index.html`, `app.js`).
 - `test/`: Smart contract tests.
 - `truffle-config.js`: Truffle network and compiler configuration.
-
-## 📜 License
-
-ISC
-
 
