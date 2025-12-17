@@ -46,6 +46,13 @@
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 
+
+require('dotenv').config();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+const PRIVATE_KEY = "1de167648a46d5a0c4f49bbe39185ec1597a2cb7ff68eaf2bd583dbe53052222";
+const URL = "https://eth-sepolia.g.alchemy.com/v2/Ksst5V1j5R1Y7irVUXRGy";
+
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -58,6 +65,7 @@ module.exports = {
    */
 
   networks: {
+    
     development: {
       host: "127.0.0.1",
       port: 7545,
@@ -65,6 +73,19 @@ module.exports = {
       gas: 6721975,      // Maksimalus Ganache limitas
       gasPrice: 20000000000 // Standartinė kaina
      },
+
+    sepolia: {
+      provider: () => new HDWalletProvider(
+        [PRIVATE_KEY],
+        URL
+      ),
+      network_id: "*", // Alchemy tiksliai žino Sepolia ID
+      gas: 1500000,        // Sumažiname limitą iki 1.5M (kad tilptų į 0.04 ETH balansą)
+      gasPrice: 20000000000, // 20 Gwei
+      confirmations: 2,      // Alchemy veikia greitai, galime palaukti 2 patvirtinimus
+      timeoutBlocks: 200,  
+      skipDryRun: true
+    }
   },
 
   // Set default mocha options here, use special reporters, etc.
@@ -84,26 +105,5 @@ module.exports = {
         evmVersion: "paris" // <--- SVARBU: Nurodome senesnę EVM versiją, kurią supranta Ganache
       }
     }
-  },
-
-  // Truffle DB is currently disabled by default; to enable it, change enabled:
-  // false to enabled: true. The default storage location can also be
-  // overridden by specifying the adapter settings, as shown in the commented code below.
-  //
-  // NOTE: It is not possible to migrate your contracts to truffle DB and you should
-  // make a backup of your artifacts to a safe location before enabling this feature.
-  //
-  // After you backed up your artifacts you can utilize db by running migrate as follows:
-  // $ truffle migrate --reset --compile-all
-  //
-  // db: {
-  //   enabled: false,
-  //   host: "127.0.0.1",
-  //   adapter: {
-  //     name: "indexeddb",
-  //     settings: {
-  //       directory: ".db"
-  //     }
-  //   }
-  // }
+  }
 };

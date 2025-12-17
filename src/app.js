@@ -53,58 +53,82 @@ App = {
     render: async function() {
         var fundingInstance;
 
-        // Gauname vartotojo sąskaitą
-        const accounts = await web3.eth.getAccounts();
-        App.account = accounts[0];
-        $("#account").html(App.account);
+        try {
+            // Gauname vartotojo sąskaitą
+            const accounts = await web3.eth.getAccounts();
+            App.account = accounts[0];
+            $("#account").html(App.account);
 
-        // Gauname kontrakto instanciją
-        const instance = await App.contracts.CrowdFunding.deployed();
-        fundingInstance = instance;
+            // Gauname kontrakto instanciją
+            fundingInstance = await App.contracts.CrowdFunding.deployed();
 
-        // 1. Tikslas
-        const target = await fundingInstance.targetAmount();
-        $("#target").html(web3.utils.fromWei(target, 'ether'));
+            // --- PATIKRINIMAS: Ar kontraktas tikrai egzistuoja? ---
+            // Dažna klaida: Ganache persikrovė, bet naršyklė atsimena seną adresą.
+            const code = await web3.eth.getCode(fundingInstance.address);
+            if (code === '0x' || code === '0x0') {
+                console.error("Kontraktas nerastas adresu: " + fundingInstance.address);
+                $("#status").html("Klaida: Kontraktas nerastas (adresas tuščias). <br> Pabandykite terminale paleisti: <b>truffle migrate --reset</b>");
+                $("#status").css("color", "red");
+                return;
+            }
+            // -------------------------------------------------------
 
-        // 2. Surinkta suma
-        const raised = await fundingInstance.raisedAmount();
-        $("#raised").html(web3.utils.fromWei(raised, 'ether'));
-
-        // 3. LAIKMATIS (Atnaujinta dalis)
-        // Pasiimame galutinį terminą (timestamp)
-        const deadlineBN = await fundingInstance.deadline();
-        const deadline = deadlineBN.toNumber(); // Konvertuojame į paprastą skaičių
-
-        // Sustabdome seną laikmatį, jei toks buvo (kad nesidubliuotų)
-        if (App.timerInterval) {
-        clearInterval(App.timerInterval);
+        } catch (error) {
+            console.error("Klaida prisijungiant prie kontrakto:", error);
+            $("#status").html("Klaida: Kontraktas nerastas šiame tinkle. Patikrinkite MetaMask tinklą.");
+            $("#status").css("color", "red");
+            return;
         }
 
-        // Paleidžiame funkciją, kuri tiksi kas 1 sekundę (1000 ms)
-        App.timerInterval = setInterval(function() {
-        // Dabartinis laikas sekundėmis
-        const now = Math.floor(Date.now() / 1000);
-        
-        // Skaičiuojame skirtumą
-        let distance = deadline - now;
+        try {
+            // 1. Tikslas
+            const target = await fundingInstance.targetAmount();
+            $("#target").html(web3.utils.fromWei(target, 'ether'));
 
-        if (distance < 0) {
-            $("#timeLeft").html("Laikas baigėsi!");
-            $("#timeLeft").css("color", "red");
-            // Galime sustabdyti laikmatį
-            clearInterval(App.timerInterval);
-        } else {
-            // Formatuojame gražiai: Minutės : Sekundės
-            const minutes = Math.floor(distance / 60);
-            const seconds = distance % 60;
-            
-            // Pridedame "0" priekyje, jei vienaženklis skaičius (pvz 09)
-            const secondsStr = seconds < 10 ? "0" + seconds : seconds;
-            
-            $("#timeLeft").html(minutes + "m " + secondsStr + "s");
-            $("#timeLeft").css("color", "black");
+            // 2. Surinkta suma
+            const raised = await fundingInstance.raisedAmount();
+            $("#raised").html(web3.utils.fromWei(raised, 'ether'));
+
+            // 3. LAIKMATIS (Atnaujinta dalis)
+            // Pasiimame galutinį terminą (timestamp)
+            const deadlineBN = await fundingInstance.deadline();
+            const deadline = deadlineBN.toNumber(); // Konvertuojame į paprastą skaičių
+
+            // Sustabdome seną laikmatį, jei toks buvo (kad nesidubliuotų)
+            if (App.timerInterval) {
+                clearInterval(App.timerInterval);
+            }
+
+            // Paleidžiame funkciją, kuri tiksi kas 1 sekundę (1000 ms)
+            App.timerInterval = setInterval(function() {
+                // Dabartinis laikas sekundėmis
+                const now = Math.floor(Date.now() / 1000);
+                
+                // Skaičiuojame skirtumą
+                let distance = deadline - now;
+
+                if (distance < 0) {
+                    $("#timeLeft").html("Laikas baigėsi!");
+                    $("#timeLeft").css("color", "red");
+                    // Galime sustabdyti laikmatį
+                    clearInterval(App.timerInterval);
+                } else {
+                    // Formatuojame gražiai: Minutės : Sekundės
+                    const minutes = Math.floor(distance / 60);
+                    const seconds = distance % 60;
+                    
+                    // Pridedame "0" priekyje, jei vienaženklis skaičius (pvz 09)
+                    const secondsStr = seconds < 10 ? "0" + seconds : seconds;
+                    
+                    $("#timeLeft").html(minutes + "m " + secondsStr + "s");
+                    $("#timeLeft").css("color", "black");
+                }
+            }, 1000);
+        } catch (error) {
+            console.error("Klaida nuskaitant duomenis:", error);
+            $("#status").html("Klaida nuskaitant duomenis iš kontrakto.");
+            $("#status").css("color", "red");
         }
-        }, 1000);
     },
   
     // 5. Funkcija: Pervesti pinigus (Contribute)
