@@ -50,8 +50,8 @@
 require('dotenv').config();
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-const PRIVATE_KEY = "1de167648a46d5a0c4f49bbe39185ec1597a2cb7ff68eaf2bd583dbe53052222";
-const URL = "https://eth-sepolia.g.alchemy.com/v2/Ksst5V1j5R1Y7irVUXRGy";
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const URL = process.env.URL
 
 module.exports = {
   /**

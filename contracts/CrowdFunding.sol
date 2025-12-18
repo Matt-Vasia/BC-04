@@ -16,8 +16,8 @@ contract CrowdFunding {
     // _targetWei: kiek ETH norime surinkti (Wei formatu)
     // _durationInMinutes: kiek minučių galioja
     constructor(uint _targetWei, uint _durationInMinutes) {
-        manager = msg.sender; // Tas, kas "deploja" kontraktą, tampa valdytoju
-        targetAmount = _targetWei; // Tikimės gauti sumą Wei formatu
+        manager = msg.sender; // Tas, kas "deplojina" kontraktą, tampa valdytoju
+        targetAmount = _targetWei; // Suma Wei formatu
         deadline = block.timestamp + (_durationInMinutes * 1 minutes);
     }
 
